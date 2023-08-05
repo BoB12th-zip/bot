@@ -1,4 +1,6 @@
 # Frontend code
+# 의존성은 config.py하고 conf.json밖에 없어서 별도의 프로젝트에서 혼자 돌려도 됨
+import datetime
 import ssl
 import asyncio
 import logging
@@ -49,12 +51,25 @@ class SlackMessage:
 
     @classmethod
     def CheckUserAuthentication(cls, slack_text, slack_userid, slack_channel, slack_timestamp, slack_presentts = None):
-        if slack_presentts:
+        if slack_presentts and slack_presentts != 'None':
+        # if slack_presentts and slack_presentts != None:    
             slackts = slack_presentts
         else:
             slackts = slack_timestamp
         if 'user' not in ALLOW_USERS:
-            return None
+            return None 
+        date_time = datetime.fromtimestamp(float(slackts))
+        access_result = request.post('https://localhost/access',data ={
+            'user_id':slack_userid,
+            'channel_id':slack_channel,
+            'access_time':date_time.strftime('%Y-%m-%d %H:%M:%S')
+        },verify=False).json()
+        access_id=''
+        if(access_result)['result'== True]:
+            access_id = access_result['access_id']
+        else:
+            return None # or error print code
+
         username = slack_userid
         user_message = slack_text.split(' ', 1)
         return cls(user_message, username, slack_userid, slack_channel, slackts)
@@ -102,7 +117,7 @@ def process(client: SocketModeClient, req: SocketModeRequest):
                 userid = req.payload["event"]['user']
                 slack_text = req.payload["event"]['text'].lower()
                 channel_id = req.payload["event"]['channel']
-                present_ts = None
+                present_ts = ''
                 thread_ts = req.payload["event"]['ts']
                 if 'thread_ts' in req.payload["event"]:
                     present_ts = req.payload["event"]['thread_ts']

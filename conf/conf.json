@@ -1,0 +1,8 @@
+
+{
+    "log":"dev",
+    "dbpassword":"password",
+    "salt":"mysecret",
+    "bot_socket" : "xapp-1-A05LFDP5ZJN-5692582438693-d4a725eb84791227cb2ef6916ac2abb93bd7466da8fdbd42db2f55aa29034391",
+    "bot_token" : "xoxb-5680907274391-5708110462961-iM8CieqxWzclI7DKW6ba8my2"
+}
